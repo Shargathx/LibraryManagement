@@ -8,6 +8,7 @@ import BookDetailPage from "./component/BookDetailsPage";
 import AddMemberPage from "./component/AddMemberPage";
 import BorrowBook from "./component/BorrowBook";
 import SearchBook from "./component/SearchBook";
+import ExternalQuery from "./component/ExternalQuery";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/add-members" element={<AddMemberPage/>}/>
         <Route path="/book-borrow" element={<BorrowBook/>}/>
         <Route path="/search" element={<SearchBook />} />
+        <Route path="/external" element={<ExternalQuery />} />
       </Routes>
     </Router>
 

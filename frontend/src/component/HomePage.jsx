@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./HomePage.css"; // your custom CSS
+import "./HomePage.css";
 
 function HomePage() {
   const [books, setBooks] = useState([]);
-  const [page, setPage] = useState(0); // tee HTMLi kaks nuppu: "eelmine", "järgmine" , mis muudavad lehekülge
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     async function fetchBooks() {
       try {
-        const data = await fetch("http://localhost:8081/api/books?size=10&sort=createdAt,desc&page=" + page);
+        const data = await fetch(
+          `${process.env.REACT_APP_API_URL}?page=${page}&size=4&sort=createdAt,desc`
+        );
         const fetchData = await data.json();
-        // const sorted = fetchData.sort(
-        //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        // );
-        setBooks(fetchData.content.slice());
+        console.log(data);
+        console.log(fetchData);
+        setBooks(fetchData.content);
+        setTotalPages(fetchData.totalPages);
       } catch (e) {
         console.error("Unable to fetch", e);
       }
     }
     fetchBooks();
-  }, []);
+  }, [page]);
 
   return (
     <div
@@ -43,67 +46,112 @@ function HomePage() {
           No books available.
         </p>
       ) : (
-        <div
-          className="d-flex gap-3 overflow-auto"
-          style={{
-            width: "100%",
-            paddingBottom: "10px",
-            // Show only 5 cards in viewport
-            scrollSnapType: "x mandatory",
-          }}
-        >
-          {books.map((book) => (
-            <Link
-              to={`/books/${book.id}`}
-              key={book.id}
-              style={{
-                textDecoration: "none",
-                flex: "0 0 20%", // 5 cards per view
-                scrollSnapAlign: "start",
-              }}
-            >
-              <div className="book-card p-2 shadow-sm" style={{ minWidth: "200px", height: "400px" }}>
-                {/* Book Image */}
-                {book.image ? (
-                  <img
-                    src={book.image ? `http://localhost:8081${book.image}` : "/no-image.png"}
-                    alt={book.title}
-                    style={{ width: "100%", height: "250px", objectFit: "cover" }}
-                  />
-                ) : (
-                  <div
+        <>
+          {/* 📚 BOOK LIST */}
+          <div
+            key={page}
+            className="d-flex gap-3 overflow-auto"
+            style={{
+              width: "100%",
+              paddingBottom: "10px",
+              scrollSnapType: "x mandatory",
+            }}
+          >
+            {books.map((book) => (
+              <Link
+                to={`/books/${book.id}`}
+                key={book.id}
+                style={{
+                  textDecoration: "none",
+                  flex: "0 0 20%",
+                  scrollSnapAlign: "start",
+                }}
+              >
+                <div
+                  className="book-card p-2 shadow-sm"
+                  style={{ minWidth: "200px", height: "400px" }}
+                >
+                  {/* Book Image */}
+                  {book.image ? (
+                    <img
+                      src={`${process.env.REACT_APP_BASE_URL}${book.image}`}
+                      alt={book.title}
+                      style={{
+                        width: "100%",
+                        height: "250px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        height: "250px",
+                        backgroundColor: "#eee",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: "8px",
+                        fontSize: "0.9rem",
+                        color: "#888",
+                      }}
+                    >
+                      No Image
+                    </div>
+                  )}
+
+                  {/* Title */}
+                  <h5 style={{ color: "#333", minHeight: "2.5rem" }}>
+                    {book.title}
+                  </h5>
+
+                  {/* Description */}
+                  <p
                     style={{
-                      height: "250px",
-                      backgroundColor: "#eee",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginBottom: "8px",
-                      fontSize: "0.9rem",
-                      color: "#888",
+                      color: "#555",
+                      fontSize: "0.85rem",
+                      minHeight: "3rem",
                     }}
                   >
-                    No Image
-                  </div>
-                )}
+                    {book.description || "No description available"}
+                  </p>
 
-                {/* Title */}
-                <h5 style={{ color: "#333", minHeight: "2.5rem" }}>{book.title}</h5>
+                  {/* Shelf */}
+                  <p
+                    style={{
+                      color: "#000",
+                      fontSize: "0.8rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Shelf: {book.shelf || "N/A"}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
 
-                {/* Description */}
-                <p style={{ color: "#555", fontSize: "0.85rem", minHeight: "3rem" }}>
-                  {book.description || "No description available"}
-                </p>
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <button
+              onClick={() => setPage(prev => prev - 1)}
+              disabled={page === 0}
+              style={{ marginRight: "10px" }}
+            >
+              Prev
+            </button>
 
-                {/* Shelf */}
-                <p style={{ color: "#000000ff", fontSize: "0.8rem", fontWeight: "bold"}}>
-                  Shelf: {book.shelf || "N/A"}
-                </p>
+            <span>
+              Page {page + 1} / {totalPages || 1}
+            </span>
 
-              </div>
-            </Link>
-          ))}
-        </div>
+            <button
+              onClick={() => setPage(prev => prev + 1)}
+              disabled={page + 1 >= totalPages}
+              style={{ marginLeft: "10px" }}
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

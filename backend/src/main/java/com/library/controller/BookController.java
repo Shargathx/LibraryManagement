@@ -1,5 +1,16 @@
 package com.library.controller;
 
+import com.library.model.Book;
+import com.library.model.BorrowRecord;
+import com.library.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,23 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.library.model.Book;
-import com.library.model.BorrowRecord;
-import com.library.repository.AuthorRepository;
-import com.library.repository.BookRepository;
-import com.library.repository.BorrowRecordRepository;
-import com.library.repository.CategoryRepository;
-import com.library.repository.PublisherRepository;
-
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:8080")
 public class BookController {
 
     private final BookRepository bookRepository;
@@ -47,25 +44,26 @@ public class BookController {
         this.borrowRecordRepository = borrowRecordRepository;
     }
 
-    // import org.springframework.data.domain.Pageable;
-    // import org.springframework.data.domain.Page;
-
-    // ✅ Get all books
+    // ✅ Get all books -> added the pageable option
     @GetMapping
-    public Page<Book> getAllBooks(
-            //@RequestParam int size,
-            //@RequestParam int page
-            Pageable pageable
-    ) {
+    public Page<Book> getAllBooks(Pageable pageable) {
         return bookRepository.findAll(pageable);
     }
 
+    @GetMapping("/bibles")
+    public List<Object> findBibles() {
+        String url = "https://holy-bible-api.com/bibles";
+
+        RestTemplate restTemplate = new RestTemplate();
+        List<Object> response = restTemplate.getForObject(url, List.class);
+        return response;
+    }
 
     @GetMapping("/search")
     public List<Book> searchBooks(@RequestParam("q") String keyword) {
         return bookRepository.searchBooks(keyword);
     }
-    
+
     // ✅ Get single book (with borrow info)
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookById(@PathVariable int id) {
@@ -146,6 +144,17 @@ public class BookController {
         if (!bookRepository.existsById(id)) return "Book not found!";
         bookRepository.deleteById(id);
         return "Book deleted successfully!";
+    }
+
+    @PostMapping("/bulk")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addMultipleBooks(@RequestBody List<Book> books) {
+        for (Book book : books) {
+            if (book.getTitle() == null || book.getTitle().isBlank()) {
+                throw new RuntimeException("One or more books have an empty title!");
+            }
+        }
+        bookRepository.saveAll(books);
     }
 
     // 🔧 Helper: assign related entities
