@@ -14,3 +14,5 @@ Hetkel on võimalik raamatuid vaid 10 kaupa näha. Võimalda raamatuid lehekülg
 Tee frontendi uus lehekülg, kus näed neid raamtuid, mis tulevad siit API endpoindist:
 https://api.itbook.store/1.0/search/react?page=1
 Võta raamatud mitte otse front-end koodist, vaid läbi back-end koodi.
+
+Tekita erinevad keskkonnad nii frontendis (env failid) kui backendis (application-dev ja application-prod) 
