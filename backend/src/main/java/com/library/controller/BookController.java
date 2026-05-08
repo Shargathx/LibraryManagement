@@ -87,12 +87,6 @@ public class BookController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("add-multiple")
-    public List<Book> addMultipleBooks(@RequestBody List<Book> books) {
-        bookRepository.saveAll(books);
-        return bookRepository.findAll();
-    }
-
     // ✅ Add book (with optional image)
     @PostMapping(consumes = {"multipart/form-data"})
     public String addBook(@RequestParam String title,
