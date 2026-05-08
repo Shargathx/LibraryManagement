@@ -1,83 +1,16 @@
-![Java](https://img.shields.io/badge/Java-17-blue)
-![Spring Boot](https://img.shields.io/badge/SpringBoot-2.7.0-brightgreen)
-![React](https://img.shields.io/badge/React-18.2.0-blue)
-![Maven](https://img.shields.io/badge/Maven-3.9.0-red)
-![Node](https://img.shields.io/badge/Node-18.17.0-green)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+Proovikontrolltöö nr 2
 
-**Library Management System**
----
-A full-stack Library Management System built with **Java Spring Boot** (backend) and **React.js** (frontend).  
-This application allows managing books, authors, categories, and members. Users can borrow and return books, and search the library efficiently.
----
-## Features
-- Add, update, delete books
-- Borrow and return books
-- Search for books by title, author, or category
-- Manage authors and categories
-- User-friendly frontend built with React
-- RESTful API backend with Spring Boot
----
+Ülesanded:
+Pane projekt käima
+	- backendis application.properties seaded
+	- frontendis node_modules kausta tekitamine "npm install" abil
+	
+Lisa mõni raamat andmebaasi
 
-## Project Structure
-```markdown
+Tee backendi API endpoint millega on võimalik listina raamatuid andmebaasi lisada
 
-LibraryManagement/
-├── backend/ # Spring Boot backend
-│ ├── src/
-│ ├── pom.xml
-│ └── mvnw
-├── frontend/ # React frontend
-│ ├── src/
-│ ├── public/
-│ └── package.json
-├── README.md
-└── .gitignore
-```
----
-## Installation
+Hetkel on võimalik raamatuid vaid 10 kaupa näha. Võimalda raamatuid lehekülgede kaupa näha.
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/krkarthik-dev/LibraryManagement.git
-cd LibraryManagement
-```
-
-### 2. Backend (Spring Boot)
-
-```bash
-cd backend
-mvn clean install
-mvn spring-boot:run
-```
-
-### 3. Frontend (React)
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-The frontend will run on `http://localhost:3000` and connect to the backend API.
-
----
-
-## Technologies Used
-
-* **Backend:** Java, Spring Boot, Spring Data JPA, MySQL/H2
-* **Frontend:** React.js, Bootstrap, Axios
-* **Version Control:** Git & GitHub
-* **Build Tools:** Maven, npm
-
----
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Author
-
-**K R Karthik** – [GitHub Profile](https://github.com/krkarthik-dev)
+Tee frontendi uus lehekülg, kus näed neid raamtuid, mis tulevad siit API endpoindist:
+https://api.itbook.store/1.0/search/react?page=1
+Võta raamatud mitte otse front-end koodist, vaid läbi back-end koodi.
