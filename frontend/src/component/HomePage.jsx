@@ -5,17 +5,17 @@ import "./HomePage.css"; // your custom CSS
 
 function HomePage() {
   const [books, setBooks] = useState([]);
+  const [page, setPage] = useState(0); // tee HTMLi kaks nuppu: "eelmine", "järgmine" , mis muudavad lehekülge
 
   useEffect(() => {
     async function fetchBooks() {
       try {
-        const data = await fetch("http://localhost:8081/api/books");
+        const data = await fetch("http://localhost:8081/api/books?size=10&sort=createdAt,desc&page=" + page);
         const fetchData = await data.json();
-        const sorted = fetchData.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        // Limit to max 10 books
-        setBooks(sorted.slice(0, 10));
+        // const sorted = fetchData.sort(
+        //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        // );
+        setBooks(fetchData.content.slice());
       } catch (e) {
         console.error("Unable to fetch", e);
       }

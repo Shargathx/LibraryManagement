@@ -8,16 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.library.model.Book;
@@ -53,11 +47,20 @@ public class BookController {
         this.borrowRecordRepository = borrowRecordRepository;
     }
 
+    // import org.springframework.data.domain.Pageable;
+    // import org.springframework.data.domain.Page;
+
     // ✅ Get all books
     @GetMapping
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public Page<Book> getAllBooks(
+            //@RequestParam int size,
+            //@RequestParam int page
+            Pageable pageable
+    ) {
+        return bookRepository.findAll(pageable);
     }
+
+
     @GetMapping("/search")
     public List<Book> searchBooks(@RequestParam("q") String keyword) {
         return bookRepository.searchBooks(keyword);
@@ -84,6 +87,12 @@ public class BookController {
         response.put("borrowedBy", borrowed != null ? borrowed.getMember().getName() : null);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("add-multiple")
+    public List<Book> addMultipleBooks(@RequestBody List<Book> books) {
+        bookRepository.saveAll(books);
+        return bookRepository.findAll();
     }
 
     // ✅ Add book (with optional image)
